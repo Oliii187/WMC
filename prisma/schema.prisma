@@ -13,17 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model a_autor {
-  a_autorId Int @id @unique @default(autoincrement())
-  a_autorVorname String
-  a_autorNachname String
-  a_buecher b_buch[] @relation("AutorBuecher")
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique
+  password  String
+  profile   Profile[]
 }
 
-model b_buch {
-  b_buchId Int @id @unique @default(autoincrement())
-  b_buchTitel String
-  b_buchISBN String @unique
-  b_a_autor a_autor[] @relation("AutorBuecher")
+model Profile {
+  id        Int      @id @default(autoincrement())  // Primärschlüssel für Profile
+  firstName String
+  lastName  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      // Fremdschlüssel auf User
 }
-
