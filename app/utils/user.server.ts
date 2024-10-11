@@ -41,5 +41,8 @@ export const getUserById = async (userId: string) => {
     where: {
       id: +userId,
     },
+    include: {
+      profile: true, 
+    },
   })
 }

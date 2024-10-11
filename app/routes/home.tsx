@@ -17,12 +17,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 
+// ...
+
 export default function Home() {
   //@ts-ignore
   const { users } = useLoaderData()
   return (
     <Layout>
-      <Outlet />
+       <Outlet />
       <div className="h-full flex">
         <UserPanel users={users} />
         <div className="flex-1"></div>

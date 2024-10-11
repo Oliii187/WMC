@@ -11,7 +11,11 @@ export function UserPanel({ users }: { users: User[] }) {
         </div>
         <div className="flex-1 overflow-y-scroll py-4 flex flex-col gap-y-10">
         {users.map(user => (
-        <UserCircle key={user.id} profile={user.profile} className="h-24 w-24 mx-auto flex-shrink-0" onClick={() => navigate(`kudos/${user.id}`)} />
+        <UserCircle 
+          key={user.id} 
+          profile={user.profile} 
+          className="h-24 w-24 mx-auto flex-shrink-0" 
+          onClick={() => navigate(`kudos/${user.id}`)} />
         ))}
         </div>
         <div className="text-center p-6 bg-gray-300">
