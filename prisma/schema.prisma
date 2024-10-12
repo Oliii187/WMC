@@ -58,5 +58,3 @@ model KudoStyle {
   kudo      Kudo     @relation(fields: [kudoId], references: [id], name: "KudoStyles")
   kudoId    String
 }
-
-

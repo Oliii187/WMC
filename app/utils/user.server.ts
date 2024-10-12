@@ -36,13 +36,10 @@ export const getOtherUsers = async (userId: string) => {
   })
 }
 
-export const getUserById = async (userId: string) => {
+
+export async function getUserById(userId: string) {
   return await prisma.user.findUnique({
-    where: {
-      id: +userId,
-    },
-    include: {
-      profile: true, 
-    },
-  })
+      where: { id: +userId },
+      include: { profile: true }, // Sicherstellen, dass das Profil enthalten ist, wenn du darauf zugreifst
+  });
 }
