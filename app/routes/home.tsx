@@ -50,24 +50,27 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
   }
 
-  let textFilter: Prisma.KudoWhereInput = {};
+  // 3
+  let textFilter: Prisma.KudoWhereInput = {}
   if (filter) {
-      const lowerCaseFilter = filter.toLowerCase();
-      textFilter = {
-          OR: [
-              { message: { contains: lowerCaseFilter } },
-              {
-                  author: {
-                      OR: [
-                        //@ts-ignore
-                          { firstName: { contains: lowerCaseFilter } },
-                          //@ts-ignore
-                          { lastName: { contains: lowerCaseFilter } },
-                      ],
-                  },
-              },
-          ],
-      };
+    textFilter = {
+      OR: [
+        //@ts-ignore
+        { message: { mode: 'insensitive', contains: filter } },
+        {
+          author: {
+            OR: [
+              { profile: { is: { firstName: { 
+                //@ts-ignore
+                mode: 'insensitive', contains: filter } } } },
+              { profile: { is: { lastName: { 
+                //@ts-ignore
+                mode: 'insensitive', contains: filter } } } },
+            ],
+          },
+        },
+      ],
+    }
   }
   
 
