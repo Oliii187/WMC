@@ -41,3 +41,4 @@ This template comes with [Tailwind CSS](https://tailwindcss.com/) already config
 # WMC
 # WMC
 # WMC
+# WMC
