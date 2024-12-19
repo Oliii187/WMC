@@ -29,7 +29,7 @@ const storage = createCookieSessionStorage({
     const exists = await prisma.user.count({ where: { email: user.email } });
     if (exists) {
       return json(
-        { error: `User already exists with that email` },
+        { error: "User already exists with that email" },
         { status: 400 }
       );
     }
@@ -38,7 +38,7 @@ const storage = createCookieSessionStorage({
     if (!newUser) {
       return json(
         {
-          error: `Something went wrong trying to create a new user.`,
+          error: "Something went wrong trying to create a new user.",
           fields: { email: user.email, password: user.password },
         },
         { status: 400 }
@@ -55,7 +55,7 @@ const storage = createCookieSessionStorage({
   
   
     if (!user || !(await bcrypt.compare(password, user.password)))
-      return json({ error: `Incorrect login` }, { status: 400 });
+      return json({ error: "Incorrect login" }, { status: 400 });
   
   
     
@@ -88,21 +88,34 @@ const storage = createCookieSessionStorage({
   async function getUserId(request: Request) {
     const session = await getUserSession(request)
     const userId = session.get('userId')
-    if (!userId || typeof userId !== 'string') return null
+    // if (!userId || typeof userId !== 'string') return null
+    console.log(getUser);
+    
+
     return userId
   }
   
   export async function getUser(request: Request) {
     const userId = await getUserId(request)
-    if (typeof userId !== 'string') {
-      return null
-    }
+
   
     try {
       const user = await prisma.user.findUnique({
-        where: { id: Number(userId) },
-        select: { id: true, email: true, profile: true },
+        where: { id: parseInt(userId || "-1") },
+        include: {profile: true},
+        //select: { id: true, email: true, profile: true },
       })
+
+      console.log("userId", userId);
+      
+
+      console.log("getUser", user);
+
+      if (!user) {
+        return null;
+      }
+      
+
       return user
     } catch {
       throw logout(request)
@@ -114,6 +127,6 @@ const storage = createCookieSessionStorage({
     return redirect('/login', {
       headers: {
         'Set-Cookie': await storage.destroySession(session),
-      },
-    })
-  }
+      },
+    })
+  }

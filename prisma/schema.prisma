@@ -31,6 +31,8 @@ model Profile {
   lastName  String
   user      User     @relation(fields: [userId], references: [id])
   userId    Int      @unique// Fremdschlüssel auf User
+  department String @default("")
+  profilePicture String? @default("")
 }
 
 model Kudo {
