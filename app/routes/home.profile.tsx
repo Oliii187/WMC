@@ -1,13 +1,14 @@
-import { LoaderFunction, ActionFunction, redirect, json } from "@remix-run/node";import { useLoaderData } from "@remix-run/react"
+import { LoaderFunction, ActionFunction, redirect, json } from "@remix-run/node";
+import { useLoaderData, useActionData } from "@remix-run/react"
 import { Modal } from "~/components/modal";
-import { getUser, requireUserId } from "~/utils/auth.server";
-import { useState } from "react";
+import { getUser, requireUserId, logout } from "~/utils/auth.server";
+import { useState, useRef, useEffect } from "react";
 import { FormField } from '~/components/form-field'
 import { departments } from "~/utils/constants";
 import { SelectBox } from "~/components/select-box";
 import { validateName } from "~/utils/validators.server";
-import { updateUser } from "~/utils/user.server";
-import { ImageUploader } from '~/components/image-uploader'; // Adjust the import path as needed
+import { updateUser, deleteUser} from "~/utils/user.server";
+import { prisma } from "~/utils/prisma.server";
 import { uploadProfilePicture } from '~/utils/upload.server'; // Adjust the import path as needed
  // Adjust the import path as needed
 
@@ -16,24 +17,42 @@ export const action: ActionFunction = async ({ request }) => {
    const formData = await request.formData();
 
    console.log("formData",formData);
+   const userId = await requireUserId(request);
    
+   
+
 
     const profilePicture = formData.get("profilePicture") as File | null;
     if (profilePicture !== null && profilePicture instanceof File) {
         const imgPath = await uploadProfilePicture(profilePicture);
+        await prisma.profile.update({
+            data: {
+              profilePicture: imgPath,
+            },
+        
+            where: {
+              userId: userId,
+            },
+          });
     }
-   const userId = await requireUserId(request);
     
     type Department = 'MARKETING' | 'ENGINEERING' | 'HR' | 'SALES'
     // 1
  
+    
+
     let firstName = formData.get('firstName')
     let lastName = formData.get('lastName')
     let department = formData.get('department')
- 
+    const action = formData.get('_action')
+    const actionData = useActionData()
+    const firstLoad = useRef(true)
  
     // 2
  
+    switch (action) {
+        case 'save':
+
     if (
  
        typeof firstName !== 'string'
@@ -69,6 +88,13 @@ export const action: ActionFunction = async ({ request }) => {
     // 4
  
     return redirect('/home')
+
+    case 'delete':
+        await deleteUser(userId)
+         return logout(request)
+    default:
+        return json({ error: `Invalid Form Data` }, { status: 400 });
+}
 }
 export const loader: LoaderFunction = async ({ request }) => {
     const user = await getUser(request)
@@ -120,8 +146,8 @@ const { user } = useLoaderData<{ user: { profile: { firstName: string, lastName:
            <div className="p-6 bg-gray-100 rounded-xl shadow-lg">
                <h2 className="text-4xl font-semibold text-blue-600 text-center mb-6">Your Profile</h2>
                <div className="w-1/3">
-               <ImageUploader imageUrl={formData.profilePicture || ''} onChange={handleFileUpload} /></div>
-               <form method="post" encType="multipart/form-data" className="space-y-4">
+</div>
+               <form method="post" encType="multipart/form-data" className="space-y-4" onSubmit={e => !confirm('Are you sure?') ? e.preventDefault() : true}>
                    <FormField
                        htmlFor="firstName"
                        label="First Name"
@@ -134,6 +160,9 @@ const { user } = useLoaderData<{ user: { profile: { firstName: string, lastName:
                        value={formData.lastName}
                        onChange={(e) => handleInputChange(e, 'lastName')}
                    />
+
+
+
                    <SelectBox
                        id="department"
                        label="Department"
@@ -143,10 +172,17 @@ const { user } = useLoaderData<{ user: { profile: { firstName: string, lastName:
                        onChange={(e) => handleInputChange(e, 'department')}
                        className="w-full rounded-xl px-3 py-2"
                    />
+
+<button name="_action" value="delete" className="rounded-xl w-full bg-red-300 font-semibold text-white mt-4 px-16 py-2 transition duration-300 ease-in-out hover:bg-red-400 hover:-translate-y-1">
+        Delete Account
+    </button>
+
                    <div className="flex justify-between items-center mt-6">
                        <button
                            type="submit"
                            className="rounded-lg bg-yellow-400 text-blue-600 font-semibold px-6 py-2 hover:bg-yellow-500 hover:scale-105 transition transform"
+                           name="_action"
+                           value="save"
                        >
                            Save
                        </button>

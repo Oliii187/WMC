@@ -1,15 +1,17 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file://./dev.db"
 }
-
 
 
 model User {
@@ -38,7 +40,8 @@ model Kudo {
   message     String
   createdAt   DateTime   @default(now())
 
- author      User       @relation(references: [id], fields: [authorId], onDelete: Cascade, "AuthoredKudos")
+
+  author      User     @relation(fields: [authorId], references: [id], name: "AuthoredKudos")
   authorId    Int
 
   recipient   User     @relation(fields: [recipientId], references: [id], name: "ReceivedKudos")

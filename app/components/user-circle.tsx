@@ -15,7 +15,7 @@ export function UserCircle({ profile, onClick, className }: props) {
         backgroundSize: "cover",
 
         ...(profile.profilePicture
-          ? { backgroundImage: `url(${profile.profilePicture})` }
+          ? { backgroundImage: `url(pps/${profile.profilePicture})` }
           : {}),
       }}
     >

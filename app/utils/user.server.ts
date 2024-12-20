@@ -61,9 +61,17 @@ export const getOtherUsers = async (userId: string) => {
 }
 
 
-export async function getUserById(userId: string) {
+export async function getUserById(userId: number) {
   return await prisma.user.findUnique({
       where: { id: +userId },
       include: { profile: true }, // Sicherstellen, dass das Profil enthalten ist, wenn du darauf zugreifst
   });
 }
+
+export const deleteUser = async (userId: number) => {
+  // Delete dependent records first
+  await prisma.profile.deleteMany({ where: { userId } }); // Delete profile
+  await prisma.kudo.deleteMany({ where: { OR: [{ authorId: userId }, { recipientId: userId }] } }); // Delete kudos
+  // Finally, delete the user
+  await prisma.user.delete({ where: { id: userId } });
+};
