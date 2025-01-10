@@ -45,6 +45,4 @@ export async function uploadProfilePicture(file: File): Promise<string | undefin
         throw new Error('Failed to upload profile picture');
     }
     
-    
 }
-

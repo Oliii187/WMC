@@ -72,7 +72,7 @@ export const ImageUploader = ({ onChange, imageUrl }: props) => {
 
                 backgroundSize: "cover",
 
-                ...(imageUrl ? { backgroundImage: `url(${imageUrl})` } : {}),
+                ...(imageUrl ? { backgroundImage: `url(pps/${imageUrl})` } : {}),
 
             }}
 

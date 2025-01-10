@@ -63,7 +63,7 @@ export const getOtherUsers = async (userId: string) => {
 
 export async function getUserById(userId: number) {
   return await prisma.user.findUnique({
-      where: { id: +userId },
+      where: { id: userId },
       include: { profile: true }, // Sicherstellen, dass das Profil enthalten ist, wenn du darauf zugreifst
   });
 }

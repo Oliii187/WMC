@@ -57,16 +57,16 @@ export const loader: LoaderFunction = async ({ request }) => {
     textFilter = {
       OR: [
         //@ts-ignore
-        { message: { mode: 'insensitive', contains: filter } },
+        { message: { lte: 'insensitive', contains: filter } },
         {
           author: {
             OR: [
               { profile: { is: { firstName: { 
                 //@ts-ignore
-                mode: 'insensitive', contains: filter } } } },
+                lte: 'insensitive', contains: filter } } } },
               { profile: { is: { lastName: { 
                 //@ts-ignore
-                mode: 'insensitive', contains: filter } } } },
+                lte: 'insensitive', contains: filter } } } },
             ],
           },
         },
